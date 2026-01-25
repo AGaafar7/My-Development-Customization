@@ -1,0 +1,21 @@
+{  
+    "workbench.iconTheme": "material-icon-theme",
+    "files.autoSave": "afterDelay",
+    "github.copilot.nextEditSuggestions.enabled": false,
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false,
+        "javascript": false
+    },    
+"editor.fontFamily": "'CaskaydiaCove NF', 'Cascadia Code', monospace",
+"editor.fontLigatures": true,
+"terminal.integrated.fontFamily": "'CaskaydiaCove NF'",
+"workbench.colorCustomizations": {
+    "statusBar.background": "#ff0f0f",
+    "statusBar.noFolderBackground": "#212121",
+    "statusBar.debuggingBackground": "#ff0505"
+  },
+  "workbench.activityBar.location": "top",
+}
