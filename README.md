@@ -1,2 +1,1 @@
-# Visual-Studio-Code
-My Visual Studio Code Customization
+# My Development Environment Customization
