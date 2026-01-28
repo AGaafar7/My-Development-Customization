@@ -60,47 +60,6 @@ _autosuggest_compute() {
     done
 }
 
-#Try this
-_autosuggest_compute() {
-    region_highlight=()
-
-    [[ -z $BUFFER ]] && {
-        POSTDISPLAY=""
-        _AS_LAST_BUFFER=""
-        _AS_LAST_SUGGESTION=""
-        return
-    }
-
-    # If buffer unchanged, just reapply cached suggestion
-    if [[ $BUFFER == $_AS_LAST_BUFFER ]]; then
-        if [[ -n $_AS_LAST_SUGGESTION ]]; then
-            POSTDISPLAY=$_AS_LAST_SUGGESTION
-            region_highlight=("P0 P${#POSTDISPLAY} fg=242")
-        fi
-        return
-    fi
-
-    # Buffer changed → recompute
-    POSTDISPLAY=""
-    _AS_LAST_SUGGESTION=""
-    _AS_LAST_BUFFER=$BUFFER
-
-    local cmd suggestion count=0
-
-    for cmd in ${(On)history}; do
-        (( ++count > AS_HISTORY_LIMIT )) && return
-        [[ $cmd == ' '* ]] && continue
-        [[ $cmd == "$BUFFER"* ]] || continue
-        (( ${#cmd} <= ${#BUFFER} )) && continue
-
-        suggestion=${cmd#$BUFFER}
-        POSTDISPLAY=$suggestion
-        _AS_LAST_SUGGESTION=$suggestion
-        region_highlight=("P0 P${#suggestion} fg=242")
-        return
-    done
-}
-##
 
 # Function to accept suggestion with the right arrow key
 _autosuggest_accept() {
