@@ -11,7 +11,7 @@ zstyle ':vcs_info:*' enable git
 
 setopt prompt_subst
 setopt transient_rprompt
-
+setopt extended_history
 # Customizing the look
 # %n = username, %~ = current folder, %# = $ or # symbol
 PROMPT='%F{cyan}%n%f in %F{yellow}%~%f ${vcs_info_msg_0_} '
@@ -29,7 +29,12 @@ _autosuggest_compute() {
     region_highlight=()
 
     [[ -z $BUFFER ]] && return
-    [[ $BUFFER == $_AS_LAST_BUFFER ]] && return
+    if [[ $BUFFER == $_AS_LAST_BUFFER ]]; then
+        # Reapply highlight without recomputing
+        [[ -n $POSTDISPLAY ]] && region_highlight=("P0 P${#POSTDISPLAY} fg=242")
+        return
+
+    fi
 
     _AS_LAST_BUFFER=$BUFFER
 
