@@ -12,6 +12,7 @@ zstyle ':vcs_info:*' enable git
 setopt prompt_subst
 setopt transient_rprompt
 setopt extended_history
+
 # Customizing the look
 # %n = username, %~ = current folder, %# = $ or # symbol
 PROMPT='%F{cyan}%n%f in %F{yellow}%~%f ${vcs_info_msg_0_} '
@@ -23,42 +24,48 @@ RPROMPT='%F{242}%*%f '
 # Local variable to save last buffer 
 typeset -g _AS_LAST_BUFFER=""
 typeset -g AS_HISTORY_LIMIT=500
+typeset -g _AS_LAST_SUGGESTION=""
+
 # Auto Suggest function
 _autosuggest_compute() {
-    POSTDISPLAY=""
-    region_highlight=()
-
-    [[ -z $BUFFER ]] && return
-    if [[ $BUFFER == $_AS_LAST_BUFFER ]]; then
-        # Reapply highlight without recomputing
-        [[ -n $POSTDISPLAY ]] && region_highlight=("P0 P${#POSTDISPLAY} fg=242")
+    [[ -z $BUFFER ]] && {
+        POSTDISPLAY=""
+        _AS_LAST_BUFFER=""
+        _AS_LAST_SUGGESTION=""
         return
+    }
 
+    # If buffer unchanged, reuse cached suggestion
+    if [[ $BUFFER == $_AS_LAST_BUFFER ]]; then
+        POSTDISPLAY=$_AS_LAST_SUGGESTION
+        return
     fi
 
     _AS_LAST_BUFFER=$BUFFER
+    POSTDISPLAY=""
+    _AS_LAST_SUGGESTION=""
 
     local cmd suggestion count=0
 
-    # Walk history newest → oldest
     for cmd in ${(On)history}; do
         (( ++count > AS_HISTORY_LIMIT )) && return
-
-        # Ignore commands starting with space
         [[ $cmd == ' '* ]] && continue
-
-        # Must start with current buffer
         [[ $cmd == "$BUFFER"* ]] || continue
-
-        # Must be longer than what is typed
         (( ${#cmd} <= ${#BUFFER} )) && continue
 
         suggestion=${cmd#$BUFFER}
         POSTDISPLAY=$suggestion
-        region_highlight=("P0 P${#suggestion} fg=242")
+        _AS_LAST_SUGGESTION=$suggestion
         return
     done
 }
+
+
+_autosuggest_apply_style() {
+    region_highlight=()
+    [[ -n $POSTDISPLAY ]] && region_highlight=("P0 P${#POSTDISPLAY} fg=242")
+}
+
 
 
 # Function to accept suggestion with the right arrow key
@@ -75,21 +82,18 @@ _autosuggest_accept() {
 
 # Hook into every keystroke
 self-insert() {
-    POSTDISPLAY=""
-    region_highlight=()
     zle .self-insert
     _autosuggest_compute
 }
 
 # Making the backspace key functionality 
 backward-delete-char() {
-    POSTDISPLAY=""
-    region_highlight=()
     zle .backward-delete-char
     _autosuggest_compute
 }
 
 # Registering functions as widget
+zle -N zle-line-pre-redraw _autosuggest_apply_style
 zle -N self-insert
 zle -N backward-delete-char
 zle -N _autosuggest_accept
