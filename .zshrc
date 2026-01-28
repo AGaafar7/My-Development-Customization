@@ -10,6 +10,7 @@ zstyle ':vcs_info:git*' formats '%F{magenta}(%b)%f '
 zstyle ':vcs_info:*' enable git
 
 setopt prompt_subst
+setopt transient_rprompt
 
 # Customizing the look
 # %n = username, %~ = current folder, %# = $ or # symbol
@@ -21,7 +22,7 @@ RPROMPT='%F{242}%*%f '
 
 # Local variable to save last buffer 
 typeset -g _AS_LAST_BUFFER=""
-
+typeset -g AS_HISTORY_LIMIT=500
 # Auto Suggest function
 _autosuggest_compute() {
     POSTDISPLAY=""
