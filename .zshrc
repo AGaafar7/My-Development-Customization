@@ -1,5 +1,23 @@
-# Prompt
-PROMPT='%F{green}%n%f in %F{cyan}%~%f '
+# Homebrew setup
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Enable Git branch info (build-in Zsh)
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+#Set Git display (Magenta branch name + cyan symbol)
+zstyle ':vcs_info:git*' formats '%F{magenta}(%b)%f '
+zstyle ':vcs_info:*' enable git
+
+setopt prompt_subst
+
+# Customizing the look
+# %n = username, %~ = current folder, %# = $ or # symbol
+PROMPT='%F{cyan}%n%f in %F{yellow}%~%f ${vcs_info_msg_0_} '
+
+# Optional : Right-side prompt for the time in light gray
+RPROMPT='%F{242}%*%f '
+
 
 # Local variable to save last buffer 
 typeset -g _AS_LAST_BUFFER=""
